@@ -25,6 +25,7 @@ public class UDPSocket
 
     public void Server(int port, IUDPSocketMsgHandler msgHandler)
     {
+        _socket.Blocking = true;
         _socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.ReuseAddress, true);
         _socket.Bind(new IPEndPoint(IPAddress.Any, port));
         _msgHandler = msgHandler;
@@ -33,6 +34,7 @@ public class UDPSocket
 
     public void Client(string address, int port, IUDPSocketMsgHandler msgHandler)
     {
+        _socket.Blocking = true;
         _socket.Connect(IPAddress.Parse(address), port);
         _msgHandler = msgHandler;
         Receive();
@@ -68,11 +70,9 @@ public class UDPSocket
         {
             State asyncState = (State)result.AsyncState;
             int dataLength = _socket.EndReceiveFrom(result, ref _endPointFrom);
-            _socket.BeginReceiveFrom(asyncState.buffer, 0, BUFFER_SIZE, SocketFlags.None, ref _endPointFrom, _recvCallback, asyncState);
-
             _msgHandler.OnRecvMsg(_endPointFrom, asyncState.buffer, dataLength);
 
-            // Console.WriteLine("RECV: {0}: {1}, {2}", _endPointFrom.ToString(), bytes, Encoding.ASCII.GetString(so.buffer, 0, bytes));
+            _socket.BeginReceiveFrom(asyncState.buffer, 0, BUFFER_SIZE, SocketFlags.None, ref _endPointFrom, _recvCallback, asyncState);
         },
         _state);
     }
