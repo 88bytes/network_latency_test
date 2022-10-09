@@ -10,6 +10,10 @@ public class UDPClient : MonoBehaviour, IUDPSocketMsgHandler
 
     UDPSocket _udpSocket;
 
+    const string SERVER_IP = "127.0.0.1";
+
+    //const string SERVER_IP = "9.134.41.53";
+
     void OnEnable()
     {
         if (ClientStarted)
@@ -17,7 +21,7 @@ public class UDPClient : MonoBehaviour, IUDPSocketMsgHandler
         ClientStarted = true;
 
         _udpSocket = new UDPSocket();
-        _udpSocket.Client("127.0.0.1", UDPNetPort.ServerPort, this);
+        _udpSocket.Client(SERVER_IP, UDPNetPort.ServerPort, this);
     }
 
     public void OnRecvMsg(EndPoint endPointFrom, byte[] msgData, int dataLength)

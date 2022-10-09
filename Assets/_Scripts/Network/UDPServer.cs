@@ -20,7 +20,7 @@ public class UDPServer : MonoBehaviour, IUDPSocketMsgHandler
         ServerStarted = true;
 
         _udpSocket = new UDPSocket();
-        _udpSocket.Server("127.0.0.1", UDPNetPort.ServerPort, this);
+        _udpSocket.Server(UDPNetPort.ServerPort, this);
     }
 
     public void OnRecvMsg(EndPoint endPointFrom, byte[] msgData, int dataLength)

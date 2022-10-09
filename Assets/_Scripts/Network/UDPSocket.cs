@@ -23,10 +23,10 @@ public class UDPSocket
         public byte[] buffer = new byte[BUFFER_SIZE];
     }
 
-    public void Server(string address, int port, IUDPSocketMsgHandler msgHandler)
+    public void Server(int port, IUDPSocketMsgHandler msgHandler)
     {
         _socket.SetSocketOption(SocketOptionLevel.IP, SocketOptionName.ReuseAddress, true);
-        _socket.Bind(new IPEndPoint(IPAddress.Parse(address), port));
+        _socket.Bind(new IPEndPoint(IPAddress.Any, port));
         _msgHandler = msgHandler;
         Receive();
     }
