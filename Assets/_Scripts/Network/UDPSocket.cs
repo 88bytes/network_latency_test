@@ -13,6 +13,7 @@ public class UDPSocket
     private Socket _socket = new Socket(AddressFamily.InterNetwork, SocketType.Dgram, ProtocolType.Udp);
     private const int BUFFER_SIZE = 8 * 1024;
     private State _state = new State();
+    private EndPoint _targetServerEndPoint;
     private EndPoint _endPointFrom = new IPEndPoint(IPAddress.Any, 0);
     private AsyncCallback _recvCallback = null;
 
@@ -32,20 +33,20 @@ public class UDPSocket
         Receive();
     }
 
-    public void Client(string address, int port, IUDPSocketMsgHandler msgHandler)
+    public void Client(string serverAddress, int port, IUDPSocketMsgHandler msgHandler)
     {
         _socket.Blocking = true;
-        _socket.Connect(IPAddress.Parse(address), port);
+        _targetServerEndPoint = new IPEndPoint(IPAddress.Parse(serverAddress), port);
         _msgHandler = msgHandler;
         Receive();
     }
 
-    public void Send(byte[] data)
+    public void SendToServer(byte[] data)
     {
-        _socket.BeginSend(data, 0, data.Length, SocketFlags.None, (result) =>
+        _socket.BeginSendTo(data, 0, data.Length, SocketFlags.None, _targetServerEndPoint, (result) =>
         {
             State asyncState = (State)result.AsyncState;
-            int bytes = _socket.EndSend(result);
+            int bytes = _socket.EndSendTo(result);
 
             // Console.WriteLine("SEND: {0}, {1}", bytes, text);
         },
@@ -57,7 +58,7 @@ public class UDPSocket
         _socket.BeginSendTo(data, 0, data.Length, SocketFlags.None, dstEndPoint, (result) =>
         {
             State asyncState = (State)result.AsyncState;
-            int bytes = _socket.EndSend(result);
+            int bytes = _socket.EndSendTo(result);
 
             // Console.WriteLine("SEND: {0}, {1}", bytes, text);
         },

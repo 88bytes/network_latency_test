@@ -31,7 +31,7 @@ public class UDPClient : MonoBehaviour, IUDPSocketMsgHandler
 
     public void Send(byte[] data)
     {
-        _udpSocket.Send(data);
+        _udpSocket.SendToServer(data);
     }
 
     public void Update()
