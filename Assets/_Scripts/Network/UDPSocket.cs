@@ -33,10 +33,11 @@ public class UDPSocket
         Receive();
     }
 
-    public void Client(string serverAddress, int port, IUDPSocketMsgHandler msgHandler)
+    public void Client(string serverAddress, int serverPort, int clientPort, IUDPSocketMsgHandler msgHandler)
     {
         _socket.Blocking = true;
-        _targetServerEndPoint = new IPEndPoint(IPAddress.Parse(serverAddress), port);
+        _targetServerEndPoint = new IPEndPoint(IPAddress.Parse(serverAddress), serverPort);
+        _socket.Bind(new IPEndPoint(IPAddress.Any, clientPort));
         _msgHandler = msgHandler;
         Receive();
     }

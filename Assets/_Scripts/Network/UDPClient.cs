@@ -21,7 +21,7 @@ public class UDPClient : MonoBehaviour, IUDPSocketMsgHandler
         ClientStarted = true;
 
         _udpSocket = new UDPSocket();
-        _udpSocket.Client(SERVER_IP, UDPNetPort.ServerPort, this);
+        _udpSocket.Client(SERVER_IP, UDPNetPort.ServerPort, UDPNetPort.ClientPort, this);
     }
 
     public void OnRecvMsg(EndPoint endPointFrom, byte[] msgData, int dataLength)
