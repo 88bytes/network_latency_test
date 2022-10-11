@@ -1,4 +1,6 @@
+using MessagePack;
 using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 using System.Text;
@@ -10,6 +12,10 @@ public class NetClient : MonoBehaviour, IMsgHandler
 
     UdpClient _socket;
 
+    Dictionary<int, HeartbeatCmd> _cmdMap = new Dictionary<int, HeartbeatCmd>();
+
+    int _index = 0;
+
     void OnEnable()
     {
         StartClient();
@@ -20,6 +26,8 @@ public class NetClient : MonoBehaviour, IMsgHandler
         if (ClientStarted)
             return;
         ClientStarted = true;
+
+        _cmdMap.Clear();
 
         _socket = new UdpClient(NetConfig.ClientPort);
         _socket.BeginReceive(OnRecvMsg, _socket);
@@ -33,8 +41,21 @@ public class NetClient : MonoBehaviour, IMsgHandler
 
         #region 处理网络消息
         UdpClient socket = result.AsyncState as UdpClient;
+
         byte[] msg = socket.EndReceive(result, ref epFrom);
-        Debug.Log($"client recv data, from: {epFrom}, dataLength: {msg.Length}");
+
+        HeartbeatCmd cmd = MessagePackSerializer.Deserialize<HeartbeatCmd>(msg);
+
+        if (!_cmdMap.ContainsKey(cmd.Index))
+        {
+            Debug.Log($"client recv data, from: {epFrom}, index not found: {cmd.Index}");
+        }
+        else
+        {
+            float time = Time.realtimeSinceStartup;
+            cmd.RecvTime = time;
+            Debug.Log($"client recv data, from: {epFrom}, deltaTime: {cmd.RecvTime - cmd.SendTime}");
+        }
         #endregion
 
         _socket.BeginReceive(OnRecvMsg, _socket);
@@ -48,6 +69,19 @@ public class NetClient : MonoBehaviour, IMsgHandler
     public void SendTestMsg()
     {
         IPEndPoint ep = new IPEndPoint(IPAddress.Parse(NetConfig.ServerAddr), NetConfig.ServerPort);
-        SendTo(Encoding.ASCII.GetBytes("hello world."), ep);
+
+        _index++;
+
+        float time = Time.realtimeSinceStartup;
+
+        HeartbeatCmd cmd = new HeartbeatCmd();
+        cmd.Index = _index;
+        cmd.SendTime = time;
+
+        byte[] data = MessagePackSerializer.Serialize<HeartbeatCmd>(cmd);
+
+        _cmdMap[_index] = cmd;
+
+        SendTo(data, ep);
     }
 }
