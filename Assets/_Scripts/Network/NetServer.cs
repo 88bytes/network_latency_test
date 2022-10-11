@@ -35,7 +35,7 @@ public class NetServer : MonoBehaviour, IMsgHandler
         #region 处理网络消息
         UdpClient socket = result.AsyncState as UdpClient;
         byte[] msg = socket.EndReceive(result, ref epFrom);
-        Debug.Log($"server recv data, from: {epFrom}.");
+        Debug.Log($"server recv data, from: {epFrom}, data length: {msg.Length}.");
 
         // 把消息直接返回去
         SendTo(msg, epFrom);

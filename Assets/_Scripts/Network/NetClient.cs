@@ -1,4 +1,4 @@
-using MessagePack;
+using LitJson;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -44,7 +44,8 @@ public class NetClient : MonoBehaviour, IMsgHandler
 
         byte[] msg = socket.EndReceive(result, ref epFrom);
 
-        HeartbeatCmd cmd = MessagePackSerializer.Deserialize<HeartbeatCmd>(msg);
+        string json = Encoding.ASCII.GetString(msg);
+        HeartbeatCmd cmd = JsonMapper.ToObject<HeartbeatCmd>(json);
 
         if (!_cmdMap.ContainsKey(cmd.Index))
         {
@@ -78,7 +79,8 @@ public class NetClient : MonoBehaviour, IMsgHandler
         cmd.Index = _index;
         cmd.SendTime = time;
 
-        byte[] data = MessagePackSerializer.Serialize<HeartbeatCmd>(cmd);
+        string json = JsonMapper.ToJson(cmd);
+        byte[] data = Encoding.ASCII.GetBytes(json);
 
         _cmdMap[_index] = cmd;
 
