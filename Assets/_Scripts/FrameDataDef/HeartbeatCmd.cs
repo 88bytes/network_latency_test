@@ -5,6 +5,6 @@ using UnityEngine;
 public class HeartbeatCmd
 {
     public int Index;
-    public float SendTime;
-    public float RecvTime;
+    public int SendTime; // 时间单位是 ms
+    public int RecvTime;
 }

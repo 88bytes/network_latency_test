@@ -44,18 +44,25 @@ public class NetClient : MonoBehaviour, IMsgHandler
 
         byte[] msg = socket.EndReceive(result, ref epFrom);
 
-        string json = Encoding.ASCII.GetString(msg);
-        HeartbeatCmd cmd = JsonMapper.ToObject<HeartbeatCmd>(json);
+        try
+        {
+            string json = Encoding.ASCII.GetString(msg);
+            HeartbeatCmd cmd = JsonMapper.ToObject<HeartbeatCmd>(json);
 
-        if (!_cmdMap.ContainsKey(cmd.Index))
-        {
-            Debug.Log($"client recv data, from: {epFrom}, index not found: {cmd.Index}");
+            if (!_cmdMap.ContainsKey(cmd.Index))
+            {
+                Debug.Log($"client recv data, from: {epFrom}, index not found: {cmd.Index}");
+            }
+            else
+            {
+                int time = DateTime.Now.ToUniversalTime().Millisecond;
+                cmd.RecvTime = time;
+                Debug.Log($"client recv data, from: {epFrom}, deltaTime: {cmd.RecvTime - cmd.SendTime}");
+            }
         }
-        else
+        catch (Exception e)
         {
-            float time = Time.realtimeSinceStartup;
-            cmd.RecvTime = time;
-            Debug.Log($"client recv data, from: {epFrom}, deltaTime: {cmd.RecvTime - cmd.SendTime}");
+            Debug.Log($"client recv data, has exception: {e}");
         }
         #endregion
 
@@ -73,7 +80,7 @@ public class NetClient : MonoBehaviour, IMsgHandler
 
         _index++;
 
-        float time = Time.realtimeSinceStartup;
+        int time = DateTime.Now.ToUniversalTime().Millisecond;
 
         HeartbeatCmd cmd = new HeartbeatCmd();
         cmd.Index = _index;
