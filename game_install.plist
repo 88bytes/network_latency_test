@@ -11,19 +11,19 @@
                         <key>kind</key>
                         <string>software-package</string>
                         <key>url</key>
-                        <string>http://9.134.41.53/game.ipa</string>
+                        <string>http://cdn.nba2021.qq.com/banhao_game.ipa</string>
                     </dict>
                     <dict>
                         <key>kind</key>
                         <string>display-image</string>
                         <key>url</key>
-                        <string>http://9.134.41.53/512x512.png</string>
+                        <string>https://ex.nba2.qq.com/512x512.png</string>
                     </dict>
                     <dict>
                         <key>kind</key>
                         <string>full-size-image</string>
                         <key>url</key>
-                        <string>http://10.1.222.60:8080/putao/512x512.png</string>
+                        <string>https://ex.nba2.qq.com/512x512.png</string>
                     </dict>
                 </array>
                 <key>metadata</key>
